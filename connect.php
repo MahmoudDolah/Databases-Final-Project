@@ -1,23 +1,33 @@
 <?php
 function connectDB()
 	{
-		$con = mysql_connect("localhost","root","Y8NaBjfzJMWdcLpqaS9pcJdF");
-		if (!$con)
+		$con = mysqli_connect("localhost","root","root", "meetup");
+		if (mysqli_connect_errno())
 		  {
-		  die('Could not connect: ' . mysql_error());
+		  	print "Failed to connect to MySQL: " . mysqli_connect_error();
 		  }
-		mysql_select_db("datastore", $con);
 		return $con;
 	}
-
-function makequery($sql)
-{
-	$con = connectDB();
-	$result = mysql_query($sql,$con);
-	if (!$result)
-	  {
-	  die('Error: ' . mysql_error());
-	  }
-	return $result;
+	
+function closeConnectionDB(){
+	mysqli_close($dbConnection);
 }
+
+// function makequery($sql)
+// {
+// 	
+// 	$dbConnection = connectDB();
+// 	// Prevents sql injection
+// 	$stmt = $dbConnection->prepare($sql);
+// 	// $stmt->bind_param('s', $name);
+// 
+// 	$stmt->execute();
+// 
+// 	$result = $stmt->get_result();
+// 	return $result;
+// 	
+// 	mysqli_close($dbConnection);
+// 
+// }
+
 ?>
