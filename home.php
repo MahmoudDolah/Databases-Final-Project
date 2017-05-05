@@ -20,6 +20,7 @@
         </style>
     </head>
     <body>
+        <a href="logout.php">Logout</a>
         <!-- See occuring meetups all -->
         <div class="well">
             <div class="row">
