@@ -1,7 +1,7 @@
 <?php
-// See the meetups occuring at some date range
-require("connect.php");
 
+require ("connect.php");
+// See the meetups occuring at some date range
 if (isset($_POST['start_time']) && isset($_POST['end_time'])) {
     $result = viewMeetups($_POST['start_time'], $_POST['end_time']);
     // need to convert the data into an ArrayAccess
@@ -19,68 +19,27 @@ if (isset($_POST['start_time']) && isset($_POST['end_time'])) {
      echo json_encode($arr);
 }
 
-if(isset($_POST['interest_name'])){
-    $result = viewGroupsByInterest($_POST['interest_name']);
-    $arr = array();
-    $i = 0;
-    while ($row = $result->fetch_assoc()) {
-        print_r($row);
-        $arr[$i] = array();
-        $arr[$i]["group_name"] = $row["group_name"];
-        $arr[$i]["description"] = $row["description"];
-        $i = $i + 1;
-    }
-     echo json_encode($arr);
-}
-
-
 
 function viewMeetups($startTime = "", $endTime = ""){
-    $dbConnection = connectDB();
+        $mysqli = connectDB();
     if ($startTime != "" && $endTime != ""){
-        $stmt = $dbConnection->prepare("SELECT title, description, start_time, end_time, zip FROM events WHERE start_time > ? AND end_time < ?");
+        $stmt = $mysqli->prepare("SELECT * FROM events where start_time >= ? AND end_time <= ?");
         $stmt->bind_param("ss", $startTime, $endTime);
         $stmt->execute();
-        
+        $stmt->bind_result($id, $title, $description, $start, $end, $groupID, $location, $zipcode);
+
         $result = $stmt->get_result();
         return $result;
     }
     else{
-        $query = "SELECT title, description, start_time, end_time, zip FROM events";
-        $stmt = $dbConnection->prepare($query);
-        
+        $stmt = $mysqli->prepare("SELECT * FROM events WHERE DATEDIFF(start_time, NOW()) < 4 AND DATEDIFF(start_time, NOW()) > -1");
         $stmt->execute();
+        $stmt->bind_result($id, $title, $description, $start, $end, $groupID, $location, $zipcode);
 
-    	$result = $stmt->get_result();
-    	return $result;
+        $result = $stmt->get_result();
+        return $result;
 
     }
     closeConnectionDB();
-}
-
-function viewInterests(){
-    $dbConnection = connectDB();
-    
-    $sql = "SELECT interest_name FROM interest";
-    $stmt = $dbConnection->prepare($sql);
-    $stmt->execute();
-    
-    $result = $stmt->get_result();
-    
-    closeConnectionDB();
-    return $result;
-}
-
-function viewGroupsByInterest($interestName){
-    $sql = "SELECT g.group_name, g.description FROM groups g INNER JOIN interested_in ON interest_name = ?";
-    $stmt = $dbConnection->prepare($sql);
-    $stmt->bind_param("s", $interestName);
-    
-    $stmt->execute();
-    
-    $result = $stmt->get_result();
-    
-    closeConnectionDB();
-    return $result;
 }
 ?>

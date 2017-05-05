@@ -55,7 +55,7 @@
 			require('connect.php');
 			
 			//check if user is logged in
-			if (empty($_SESSION['username']) || empty($_SESSION['lastname']) || empty($_SESSION['authenticated'])){
+			if (empty($_SESSION['username']) || empty($_SESSION['firstname']) || empty($_SESSION['authenticated'])){
 			//if not authenticated, redirect to login
 			header( 'Location: /login.php' );
 			}
@@ -66,7 +66,7 @@
 				}
 			echo '<table><tr><th>Events</th><th>Description</th><th>Start Time</th><th>End Time</tr></tr>';
 			
-			$sql="SELECT * FROM events WHERE lname = '".$_SESSION['lastname']."' AND (start_time = CURDATE() OR start_time < CURDATE() + 3)";
+			$sql="SELECT * FROM events WHERE events.event_id IN (SELECT event_id FROM attend WHERE attend.username ='".$_SESSION['username']."'";
 			$result = makequery($sql);
 			
 				

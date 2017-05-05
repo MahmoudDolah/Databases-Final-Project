@@ -1,140 +1,207 @@
-<!DOCTYPE HTML>
-<!--Mahindra Persaud-->
+<!DOCTYPE html>
 <html>
-	<head>
-		<title>  </title>
-		<script type= "text/javascript">
-        </script>
-		<style type = "text/css">
-			body{
-				background: url("Index Pictures/background.jpg");
-				background-size: cover;
-				color: white;
-				font-family: papyrus;
-				text-shadow: 2px 2px 5px white;
-			}
-			
-			h1, h3, form, span#new{
-				margin-left: 20%;
-			}
-			
-			a{
-				color: white;
-			}
-			
-			div#loginSuccess, div#badLogin, div#badLogin2{
-				margin-left: 20%;
-				font-size: 32px;
-				margin-top: 10%;		
-			}
-			
-			input#button{
-				border-color: white;
-				background-color: black;
-				border-style: ridge;
-				border-width: 2px;
-				color: white;
-			}
-			
-			h3{
-				color: black;
-				text-shadow: -1px -1px white, 1px 1px #333;
-				text-shadow: 1px 1px white, -1px -1px #444;
-				
-			}
-		</style>			
-		<?php
-            require('connect.php');
-        
-            // secure with UUID cookie
-            // sanitize data with function
-            // make connectDB module
-        
-            if (!empty($_SESSION['username']) && !empty($_SESSION['firstname']) && !empty($_SESSION['authenticated'])){
-                //if authenticated already, send to home
-                header( 'Location: /home.php' );
-            }
-        
-            else{
-                if (empty($_POST['username']) && empty($_POST['password']))
-                    echo '<h1>Welcome! To the Everything Forum!</h1>
-                          <h3>Please login here:</h3>
-                          <div id = "login">
-                          <form name = "login" action = "/login.php" method = "post">
-                          Username: <input type = "text" name = "username" placeholder = "username" value ="'.$_POST['username'].'"style = "border-color: red;"/>
-                          <br />
-                          Password: <input type = "password" name = "password" placeholder = "password" value ="'.$_POST['password'].'"style = "border-color: red;"/>
-                          <br />
-                          <input id = "button" type = "submit" value = "Login" />
-                          </form>
-                          </div>
-                          <br />
-                          <span id ="new" >New? </span><a href = "/register.php">Register now!</a>
-                          <br />';
-                            
-                else if (empty($_POST['username']))
-                    echo '<h1>Welcome! To the Everything Forum!</h1>
-                          <h3>Please login here:</h3>
-                          <div id = "login">
-                          <form name = "login" action = "/login.php" method = "post">
-                          Username: <input type = "text" name = "username" placeholder = "username" style = "border-color: red;"/>
-                          <br />
-                          Password: <input type = "password" name = "password" value ="'.$_POST['password'].'"/>
-                          <br />
-                          <input id = "button" type = "submit" value = "Login" />
-                          </form>
-                          </div>
-                          <br />
-                          <span id ="new" >New? </span><a href = "/register.php">Register now!</a>
-                          <br />';
-                
-                else if (empty($_POST['password']))
-                    echo '<h1>Welcome! To the Everything Forum!</h1>
-                          <h3>Please login here:</h3>
-                          <div id = "login">
-                          <form name = "login" action = "/login.php" method = "post">
-                          Username: <input type = "text" name = "username" value ="'.$_POST['username'].'"/>
-                          <br />
-                          Password: <input type = "password" name = "password" placeholder = "password" style = "border-color: red;"/>
-                          <br />
-                          <input id = "button" type = "submit" value = "Login" />
-                          </form>
-                          </div>
-                          <br />
-                          <span id ="new" >New? </span><a href = "/register.php">Register now!</a>
-                          <br />';
-        
-            else{
-                if (!(strlen($_POST['username']) > 16 || strlen($_POST['password']) <= 1)){
-                    $username = mysqli_real_escape_string(connectDB(), $_POST['username']);
-                    $password = mysqli_real_escape_string(connectDB(), $_POST['password']);
-                }
-                else{
-                    die('<body><div id = "badLogin2">Username must be less than 16 characters, password must be at least two characters long.  Please try again.</div></body>');
-                }
-        
-                $sql="SELECT firstname FROM member WHERE username='".$username."' AND password='".$password."'";
-                $result = makequery($sql);
-                
-                if(mysqli_num_rows($result) == 1){
-                    $row = mysqli_fetch_array($result);  
-                    $firstname = $row['firstname']; 
-                    
-                    session_start();
-                    $_SESSION['username'] = $username;  
-                    $_SESSION['firstname'] = $firstname;  
-                    $_SESSION['authenticated'] = 1;
-            
-                    echo '<body><div id = "loginSuccess">Login successful!  <a href = "/loading.php">Click here to proceed!</a></div></body>';	
-                }
-                
-                else{
-                    die('<body><div id = "badLogin">Bad username or password.  Please try again.</div></body>');
-                }
-            }
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Login</title>
+    <script src="js/login.js"></script>
+    <!-- Bootstrap -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <!-- Font Awesome -->
+    <script src="https://use.fontawesome.com/95e986a209.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.13.1/jquery.validate.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/navbar.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="css/login.css">
+    <style type="text/css">
+        #content{
+            background: #666666;
         }
-        ?>
-	</head>
-	<body>
-    </body>
+
+        #container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        #center {
+            position: absolute;
+            display: block;
+            margin: 0 auto;
+            background:rgba(255,255,255,0.5);
+        }
+    </style>
+<?php
+include ("connect.php");
+ini_set('display_errors', '0'); 
+    
+if(isset($_SESSION["username"])){
+    echo '<body>
+            <div id="header">
+                <!-- Fixed navbar -->
+                <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <div class="small-logo-container">
+                                <img class="small-logo" src="./img/meetup.png">
+                            </div>
+                        </div>
+                        <div class="navbar-collapse collapse">
+                            <ul class="nav navbar-nav navbar-right">
+                                <li class="active"><a href="login.php">Login</a></li>
+                                <li><a href="register.php">Sign Up</a></li>
+                                <li><a href="public.php">Public Info</a></li>
+                            </ul>
+                        </div>
+                        <!--/.nav-collapse -->
+                    </div>
+                </div>
+            </div>
+            <!-- Navbar finished -->
+            <div id="content">
+            <div id="container">
+                <div id="center" style="background:rgba(255,255,255,0.5);">You are already logged in! Taking you to the home page now!</div>
+                </div>
+            </div>
+        </body>';
+    header("refresh: 3; home.php");
+}
+    
+else{
+    if(isset($_POST["username"]) && isset($_POST["password"])){
+        if($stmt = $mysqli->prepare("SELECT * FROM member WHERE username = ? AND password = ?")){
+            $stmt->bind_param("ss", $_POST["username"], md5($_POST["password"]));
+            $stmt->execute();
+            $stmt->bind_result($username, $password, $firstname, $lastname, $zipcode);
+            if($stmt->fetch()){
+                $_SESSION["username"] = $username;
+                $_SESSION["password"] = $password;
+                $_SESSION["REMOTE_ADDR"] = $_SERVER["REMOTE_ADDR"];
+                echo '<body>
+                        <div id="header">
+                            <!-- Fixed navbar -->
+                            <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+                                <div class="container">
+                                    <div class="navbar-header">
+                                        <div class="small-logo-container">
+                                            <img class="small-logo" src="./img/meetup.png">
+                                        </div>
+                                    </div>
+                                    <div class="navbar-collapse collapse">
+                                        <ul class="nav navbar-nav navbar-right">
+                                            <li class="active"><a href="login.php">Login</a></li>
+                                            <li><a href="register.php">Sign Up</a></li>
+                                            <li><a href="public.php">Public Info</a></li>
+                                        </ul>
+                                    </div>
+                                    <!--/.nav-collapse -->
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Navbar finished -->
+                        <div id="content">
+                        <div id="container"
+                            <div id="center" style="background:rgba(255,255,255,0.5);">
+                                You are already logged in! Taking you to the home page now!
+                            </div>
+                            </div>
+                        </div>
+                    </body>';
+                header("refresh: 3; home.php");
+            }
+            else{
+                sleep(1);
+                echo '<body>
+                        <div id="header">
+                            <!-- Fixed navbar -->
+                            <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+                                <div class="container">
+                                    <div class="navbar-header">
+                                        <div class="small-logo-container">
+                                            <img class="small-logo" src="./img/meetup.png">
+                                        </div>
+                                    </div>
+                                    <div class="navbar-collapse collapse">
+                                        <ul class="nav navbar-nav navbar-right">
+                                            <li><a href="login.php">Login</a></li>
+                                            <li><a href="register.php">Sign Up</a></li>
+                                            <li><a href="public.php">Public Info</a></li>
+                                        </ul>
+                                    </div>
+                                    <!--/.nav-collapse -->
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Navbar finished -->
+                        <div id="content">
+                        <div id="container">
+                            <div id="center" style="background:rgba(255,255,255,0.5);">
+                                Incorrect username or password. Please try again. Redirecting to the login page.<br />
+                                If not please <a href="login.php" style="color:black">click here</a>.
+                            </div>
+                            </div>
+                        </div>
+                    </body>';
+                header("refresh: 3; url=login.php");
+            }
+            $stmt->close();
+            $mysqli->close();
+        }
+    }
+    else{
+        echo '
+                    <!-- Fixed navbar -->
+                    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+                        <div class="container">
+                            <div class="navbar-header">
+                                <div class="small-logo-container">
+                                    <img class="small-logo" src="./img/meetup.png">
+                                </div>
+                            </div>
+                            <div class="navbar-collapse collapse">
+                                <ul class="nav navbar-nav navbar-right">
+                                    <li><a href="login.php">Login</a></li>
+                                    <li><a href="register.php">Sign Up</a></li>
+                                    <li><a href="public.php">Public Info</a></li>
+                            </ul>
+                        </div>
+                        <!--/.nav-collapse -->
+                        </div>
+                    </div>
+                </div>
+                <!-- Navbar finished -->
+                <div id="content">
+                    <div class="text-center" style="padding: 50px 0;">
+                        <div class="logo">Login</div>
+                        <div class="login-form-1">
+                            <form id="login-form" class="text-left" role="form" method="POST" action="login.php">
+                                <div class="main-login-form">
+                                    <div class="login-group">
+                                        <div class="form-group">
+                                            <label for="username" class="sr-only">Username</label>
+                                            <input type="text" class="form-control" id="username" name="username" placeholder="username" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="password" class="sr-only">Password</label>
+                                            <input type="password" class="form-control" id="password" name="password" placeholder="password" required>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="login-button" value="Submit"><i class="fa fa-chevron-right"></i></button>
+                                </div>
+                                <div class="etc-login-form">
+                                    <!-- <p>forgot your password? <a href="#">click here</a></p> -->
+                                    <p>new user? <a href="register.php">create new account</a></p>
+                                    <p><a href="index.php">Go back</a></p>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>';
+    }
+}
+?>
+</head>
 </html>

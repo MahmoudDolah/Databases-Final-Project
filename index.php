@@ -1,130 +1,103 @@
-<!DOCTYPE HTML>
-<!--Mahindra Persaud-->
-<?php 
-	require("publicInfo.php");
-?>
+<!DOCTYPE html>
 <html>
-	<head>
-		<title>Database Final</title>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">	
-		<style>
-			.interest{
-				color:black;
-			}
-		</style>
-    </head>
-    <body>
-    <button class="login" href="login.php">Login</button>
-        <!-- See occuring meetups all -->
-		<div class="well">
-			<div class="row">
-				<div class="col-md-6">
-					<?php 
-						$result = viewMeetups();
-						// Store data in variables, attach them to html objects
-						while ($row = $result->fetch_assoc()) {
-							echo "<ul class='list-group'>";
-						    echo "<li class='list-group-item h3'>".$row["title"]."</li>";
-							echo "<li class='list-group-item'>".$row["description"]."</li>";
-							echo "<li class='list-group-item'>Starts at: ".$row["start_time"]."</li>";
-							echo "<li class='list-group-item'>Ends at: ".$row["end_time"]."</li>";
-							echo "<li class='list-group-item'>Zipcode: ".$row["zip"]."</li>";
-							echo "</ul>";
-						} 
-					?>
-				</div>
-			<!-- Search for specific dates -->
-			<div class="col-md-6">
-				<div class="search input-group">
-					<p class="h4">Enter dates in the form of DateTimes to search for ongoing events</p>
-					<input type="text" name="start_time" class="form-control" placeholder="yyyy-mm-dd or yyyy-mm-dd hh-mm-ss">
-					<input type="text" name="end_time" class="form-control" placeholder="yyyy-mm-dd or yyyy-mm-dd hh-mm-ss">
-					<div class="input-group-btn"><input class="submit btn" type="submit"></div>
-				</div>
-				<div id="test"></div>
-			</div>
-		</div>
-		<hr>
-		<div class="row">
-			<!-- display list of interests on left -->
-			<div class="col-md-6">
-				<div class="h3 text-center">Interests</div>
-				<?php
-					$result = viewInterests();
-					echo "<ul class='list-group'>";
-					while ($row = $result->fetch_assoc()) {
-						echo "<li class='list-group-item btn-info btn interest'>".$row["interest_name"]."</li>";
-					}
-					echo "</ul>";
-				 ?>
-			</div>
-			<div class="col-md-6">
-				<div class="h3 text-center">Groups</h3>
-				<ul class="groups list-group"></ul>
-			</div>
-		</div>
-	
-	
-		<script type="text/javascript">
-		$('.submit').click(function() {
-			$.ajax({
-				type: "POST",
-				url: "publicInfo.php",
-				data: { 
-					start_time: $('input[name="start_time"]').val(), // "2017-04-30 00:00:00",
-					end_time: $('input[name="end_time"]').val() // "2017-05-01 00:00:00"
-				},
-				success: function(data){
-						data = JSON.parse(data);
-						$('#test').empty();
-						$('#test').append($('<p class="h3">Results</p>'));
-						for(i = 0; i < data.length; i++){
-							// create the lists
-							var list = $("<ul class='list-group'>'");
-							list.append("<li class='list-group-item h3'>" + data[i].title + "</li>");
-							list.append("<li class='list-group-item'>" + data[i].description + "</li>");
-							list.append("<li class='list-group-item'>" + data[i].start_time + "</li>");
-							list.append("<li class='list-group-item'>" + data[i].end_time + "</li>");
-							list.append("<li class='list-group-item'>" + data[i].zip + "</li>");
-							list.append("</ul>");
-							$('#test').append(list);
-						}
-				},
-				error: function (xhr, ajaxOptions, thrownError) {
-			        alert(xhr.status);
-			        alert(thrownError);
-			    }
-			})
-		});
-		
-		$('.interest').click(function(){
-				var value = $(this).html();
-				$.ajax({
-					type: "POST",
-					url: "publicInfo.php",
-					data: {
-						interest_name: value
-					},
-					success: function(data){
-						data = JSON.parse(data);
-						$('.groups').empty();
-						alert(data);
-						for(i = 0; i < data.length; i++){
-							// create the lists
-							var list = $(".groups");
-							list.append("<li class='list-group-item h3'>" + data[i].group_name + "</li>");
-							list.append("<li class='list-group-item'>" + data[i].description + "</li>");
-							list.append(list);
-						}
-					},
-					error: function (xhr, ajaxOptions, thrownError) {
-				        alert(xhr.status);
-				        alert(thrownError);
-				    }
-				});
-		});
-		</script>	
-        
-    </body>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Meetups</title>
+    <!-- Bootstrap -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <!-- Font Awesome -->
+    <script src="https://use.fontawesome.com/95e986a209.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/navbar.css" media="screen">
+    <style rel="stylesheet" type="text/css">
+        #content {
+            display: block;
+            position: absolute;
+            background-image: url("img/totoro.jpg");
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+        }
+
+        #center {
+            background:rgba(255,255,255,0.5);
+            margin-top: 50%;
+            margin-left: 50%;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<?php
+
+include ("connect.php");
+    
+if(!isset($_SESSION["username"])){
+    echo '<body>
+          <!-- Latest compiled and minified JavaScript -->
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+            <div id="header">
+                <!-- Fixed navbar -->
+                <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <div class="small-logo-container">
+                                <img class="small-logo" src="./img/meetup.png">
+                            </div>
+                        </div>
+                        <div class="navbar-collapse collapse">
+                            <ul class="nav navbar-nav navbar-right">
+                                <li><a href="login.php">Login</a></li>
+                                <li><a href="register.php">Sign Up</a></li>
+                                <li><a href="public.php">Public Info</a></li>
+                            </ul>
+                        </div>
+                        <!--/.nav-collapse -->
+                    </div>
+                </div>
+            </div>
+            <!-- Navbar finished -->
+            <div id="content">
+            </div>
+        </body>';
+}
+
+else{
+    $username = htmlspecialchars($_SESSION["username"]);
+    echo '<body>
+          <!-- Latest compiled and minified JavaScript -->
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+            <div id="header">
+                <!-- Fixed navbar -->
+                <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <div class="small-logo-container">
+                                <img class="small-logo" src="./img/meetup.png">
+                            </div>
+                        </div>
+                        <div class="navbar-collapse collapse">
+                            <ul class="nav navbar-nav navbar-right">
+                                <li><a href="login.php">Login</a></li>
+                                <li><a href="register.php">Sign Up</a></li>
+                                <li><a href="public.php">Public Info</a></li>
+                            </ul>
+                        </div>
+                        <!--/.nav-collapse -->
+                    </div>
+                </div>
+            </div>
+            <!-- Navbar finished -->
+            <div id="content">
+                <div id="center">
+                    You are already logged in! Taking you to the home page now!
+                </div>
+            </div>
+        </body>';
+    header("refresh: 3; home.php");
+}
+    
+?>
 </html>

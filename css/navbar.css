@@ -1,0 +1,58 @@
+/* *********************************
+   Some Style Overrides on Bootstrap
+  ********************************** */
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0 0;
+    padding: 0 0;
+}
+
+#header {
+    position: fixed;
+    width: 100%;
+    height: 50px;
+    top: 0;
+}
+
+#content {
+    width: 100%;
+    position: fixed;
+    top: 51px;
+    bottom: 0;
+    overflow: auto;
+}
+
+.navbar-inverse {
+    border-bottom: none;
+}
+
+.navbar-inverse .navbar-collapse {
+    border-color: transparent;
+    @media (max-width: 767px) {
+        background: rgba(255, 255, 255, 0.75);
+    }
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    color: black;
+}
+
+.navbar-inverse .navbar-nav > li > a:hover,
+.navbar-inverse .navbar-nav > li > a:focus {
+    color: #E81C40;
+}
+/* *********************************
+           Toolbar Logo
+  ********************************** */
+
+.small-logo-container {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.small-logo {
+    height: 40px;
+}
