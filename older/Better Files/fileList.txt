@@ -1,0 +1,64 @@
+**  CS3083 Databases  **
+******  Fall 2016  *****
+****  Nahckjoon Kim  ***
+*******  N19890933  ****
+****  NK1902@nyu.edu  **
+
+Below is the list of files in this application and their functionality.
+
+include.php
+	-Code for establishing mysql database connection.
+	-Included in all files.
+
+index.php
+	-Welcome page. 
+	-Links to: login, registration, public information.
+
+login.php
+	-Log in page.
+	-Takes user inputs as POST and checks against the database for validity.
+	-If valid login, links to homepage.
+
+register.php
+	-Registration page.
+	-Takes user inputs as POST and inputs them into database.
+	-If successful in inserting into database, displays link to Login.
+
+public.php
+	-Shows events that are happening in the next 3 days.
+	-ALlows for searching for events that correlate with submitted input.
+
+home.php
+	-Home page for logged-in users.
+	-Contains links to all of the features (described in a seperate file, as required).
+
+viewEvent.php
+	-Shows events happening today and in the next 3 days, that the user has signed up for.
+
+seeRatings.php
+	-Shows the average rating of all events sponsored by groups user partake in, that happened in the past three days.
+
+friendEvent.php
+	-Shows all upcoming events that the user's friends signed up for
+
+rateEvent.php
+	-Allows user to rate a past event that the user signed up for.
+
+searchEvent.php
+	-Shows all upcoming events that correlate to the user's interests.
+
+signUp.php
+	-Allows user to choose an upcoming event and sign up.
+
+deleteAccount.php
+	-Allows user to delete account, after verifying non-accidental click by requiring user to type his/her username and hitting "DELETE" button.
+
+logout.php
+	-Logs a user out.
+	-Terminates the session and redirects to index.php
+
+joinGroup.php
+	-Allows user to choose and join a pre-existing group.
+
+createEvent.php
+	-Allows user to create a new event on behalf of one of the groups that the user is part of and is authorized in.

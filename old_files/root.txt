@@ -1,7 +1,0 @@
-use mysql
-
-update user set password=PASSWORD("Y8NaBjfzJMWdcLpqaS9pcJdF") where User='root';
-
-flush privileges;
-
-http://127.0.0.1/sqlbuddy/login.php

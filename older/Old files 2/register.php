@@ -61,15 +61,12 @@
             	   strlen($_POST['username']) > 20 ||
             	   strlen($_POST['password']) <= 1 || 
 				   strlen($_POST['password']) > 32 || 
-            	   strlen($_POST['firstname']) <= 1 ||
-            	   strlen($_POST['firstname']) > 20 ||
-            	   strlen($_POST['lastname']) <= 1 ||
-            	   strlen($_POST['lastname']) > 20)){
+            	   strlen($_POST['firstName']) <= 1 ||
+            	   strlen($_POST['firstName']) > 20 ||
+            	   strlen($_POST['lastName'] <= 1) ||
+            	   strlen($_POST['lastName'] > 20){
                 $username = mysqli_real_escape_string(connectDB(), $_POST['username']);
                 $password = mysqli_real_escape_string(connectDB(), $_POST['password']);
-                $firstname =mysqli_real_escape_string(connectDB(), $_POST['firstname']);
-                $lastname = mysqli_real_escape_string(connectDB(), $_POST['lastname']);
-                $zipcode = mysqli_real_escape_string(connectDB(), $_POST['zipcode']);
             }
 			
             else{

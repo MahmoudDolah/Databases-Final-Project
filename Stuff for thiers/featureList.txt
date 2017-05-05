@@ -1,0 +1,175 @@
+**  CS3083 Databases  **
+******  Fall 2016  *****
+****  Nahckjoon Kim  ***
+*******  N19890933  ****
+****  NK1902@nyu.edu  **
+
+This file lists all the features (explanation, SQL).
+
+FEATURES:
+
+1. View Public Info (public.php)
+	- Displays the events happening in the next 3 days.
+	
+	Query to get all events in next 3 days:	
+		("SELECT * FROM an_event WHERE DATEDIFF(start_time, NOW()) < 4 AND DATEDIFF(start_time, NOW()) > -1")
+
+	- Also allows for searching for events of particular interest.
+	
+	Query to get all of the interests so user can choose:
+		("SELECT * FROM interest")
+	
+	Query to get the events that correlate to the chosen interest:
+		(SELECT * FROM an_event WHERE DATEDIFF(start_time,NOW()) > -1 AND event_id IN (SELECT event_id FROM organize WHERE group_id IN (SELECT group_id FROM about WHERE CONCAT(category,keyword) LIKE ?)))
+
+
+2. Login (login.php)
+	- Allows user to input username and password to log in.
+
+	Query to process login:
+		("SELECT * FROM member WHERE username = ? AND password = ?")
+
+	bind_param takes md5() of the SESSION password variable.
+
+	- If query returns no data (meaning incorrect username and/or password),
+		error message is shown and page is reloaded so user can try again.
+
+	- If query returns data (meaning valid login information),
+		user is redirected to the homepage.
+
+
+3. View My Upcoming Events (viewEvent.php)
+	- This feature is accessible from the homepage (home.php).
+
+	- Displays events happening today that the user is signed up for.
+	
+	Query:
+		("SELECT * FROM an_event WHERE DATEDIFF(start_time, NOW()) = 0 AND event_id IN (SELECT event_id FROM sign_up WHERE username = ?)")
+
+	- Displays events happening in the next 3 days that the user is signed up for.
+	
+	Query:
+		("SELECT * FROM an_event WHERE DATEDIFF(start_time, NOW()) < 4 AND DATEDIFF(start_time,NOW()) > -1 AND event_id IN (SELECT event_id FROM sign_up WHERE username = ?)")
+
+
+4. Sign Up (signUp.php)
+	- This feature is accessible from the homepage (home.php).
+
+	- Displays events that the user can sign up for (Does not show events that user already signed up for).
+	
+	Query:
+		("SELECT * FROM an_event WHERE DATEDIFF(start_time,NOW()) > -1 AND event_id NOT IN (SELECT event_id FROM sign_up WHERE username = ?)")
+
+	- Allows user to choose the event to sign up for, then passes in the event_id as POST.
+	
+	Query to insert user into sign_up:
+		("INSERT INTO sign_up VALUES (?,?,NULL)"))
+	
+	- bind_param binds event_id and SESSION username.	
+
+
+5. Search for events of interest
+	- This feature is accessible from the homepage (home.php).
+
+	- Displays future events that correlate with the user's interests, indicated by user's group affiliations.
+	
+	Query:
+		("SELECT * FROM an_event WHERE event_id IN (SELECT event_id FROM organize WHERE DATEDIFF(start_time, NOW()) > -1 AND group_id IN (SELECT group_id FROM about WHERE EXISTS (SELECT category,keyword FROM interested_in WHERE username = ?)))")
+
+
+6. Create an event
+	- This feature is accessible from the homepage (home.php).
+
+	- User chooses which group the user represents, and inputs all information regarding the new event.
+
+	- Only the groups that the user is authorized to represent is listed in the drop-down option
+	Query:
+		("SELECT group_id FROM belongs_to WHERE username = ? AND authorized = 1")
+
+	- Once user submits the data, below query is run to insert the new event into the database
+	
+	Query:
+		("INSERT INTO an_event VALUES (0,?,?,?,?,?,?)")
+	
+	- Date data is reformatted to comply with MYSQL formatting standards
+
+	- After event is created, data is added to "orginize" table, indicating that the event is sponsored by the group.
+	
+	Query:
+		("INSERT INTO organize VALUES ((SELECT event_id FROM an_event WHERE title = ? AND description = ? AND start_time = ? AND end_time = ? AND location_name = ? AND zipcode = ?),?)")
+	
+	- bind_param values can be found in "createEvent.php".
+
+
+7. Rate an event
+	- This feature is accessible from the homepage (home.php).
+
+	- User selects a past event that he/she signed up for, and submits a rating (min 0, max 5).
+
+	- Events that have not started or was not signed up for by the user is not shown as an option.
+
+	Query:
+		("SELECT event_id, title FROM an_event WHERE DATEDIFF(start_time,NOW()) < 0 AND event_id IN (SELECT event_id FROM sign_up WHERE username = ?)")
+
+		("UPDATE sign_up SET rating = ? WHERE event_id = ? AND username = ?")
+
+
+8. See average ratings
+	- This feature is accessible from the homepage (home.php).
+
+	- Displays the average ratings of all events in the past three days sponsored by user's group affiliations.
+
+	Query:
+		("SELECT AVG(rating),COUNT(rating) FROM sign_up WHERE event_id IN (SELECT event_id FROM organize WHERE group_id IN (SELECT group_id FROM belongs_to WHERE username = ?))")
+
+
+9. See friends' events
+	- This feature is accessible from the homepage (home.php).
+
+	- Displays future events that any of user's friends have signed up for.
+
+	Query:
+		("SELECT * FROM an_event WHERE DATEDIFF(start_time,NOW()) > -1 AND event_id IN (SELECT event_id FROM sign_up WHERE username IN (SELECT friend_to as username FROM friend WHERE friend_of = ?))")
+
+
+10. Logout
+	- This feature is accessible from the homepage (home.php).
+
+	- Logs the user out by terminating the session and redirecting to the welcome page (index.php).
+
+	Query: No query.
+
+
+---- ADDITIONAL FEATURES -----
+
+11. Create Account
+	- Allows user to submit account information for creating a new account.
+
+	- Query checks for duplicate username, and then inserts new account into the database.
+
+	Query:
+		("SELECT username FROM member WHERE username = ?")
+
+		("INSERT INTO member (username,password,firstname,lastname,email,zipcode) VALUES (?,?,?,?,?,?)")
+
+
+12. Delete Account
+	- This feature is accessible from the homepage (home.php).
+
+	- Allows the user to delete the account. Verifies for accidental-click by requiring the user to type and submit the username.
+
+	Query:
+		("DELETE FROM member WHERE username = ?")
+
+	- Professor Frankl approved the addition of "on delete cascade" into the sql setup file, so all data related to the user is automatically cascaded when it's deleted from "member".
+
+
+13. Join A Group
+	- This feature is accessible from the homepage (home.php).
+
+	- Allows the user to select a group to join. Does not display groups that the user already belongs to.
+
+	Query:
+		("SELECT group_id, group_name FROM a_group WHERE group_id NOT IN (SELECT group_id FROM belongs_to WHERE username=?)")
+
+		("INSERT INTO belongs_to VALUES (?,?,0)")

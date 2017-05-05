@@ -1,1 +1,0 @@
-to make an admin, go to SQLbuddy and change one of the account records' user_class to "admin"

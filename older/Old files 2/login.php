@@ -50,7 +50,7 @@
             // sanitize data with function
             // make connectDB module
         
-            if (!empty($_SESSION['username']) && !empty($_SESSION['firstname']) && !empty($_SESSION['authenticated'])){
+            if (!empty($_SESSION['username']) && !empty($_SESSION['lastname']) && !empty($_SESSION['authenticated'])){
                 //if authenticated already, send to home
                 header( 'Location: /home.php' );
             }
@@ -113,16 +113,16 @@
                     die('<body><div id = "badLogin2">Username must be less than 16 characters, password must be at least two characters long.  Please try again.</div></body>');
                 }
         
-                $sql="SELECT firstname FROM member WHERE username='".$username."' AND password='".$password."'";
+                $sql="SELECT lastname FROM member WHERE username='".$username."' AND password='".$password."'";
                 $result = makequery($sql);
                 
                 if(mysqli_num_rows($result) == 1){
                     $row = mysqli_fetch_array($result);  
-                    $firstname = $row['firstname']; 
+                    $lastname = $row['lastname']; 
                     
                     session_start();
                     $_SESSION['username'] = $username;  
-                    $_SESSION['firstname'] = $firstname;  
+                    $_SESSION['lastname'] = $lastname;  
                     $_SESSION['authenticated'] = 1;
             
                     echo '<body><div id = "loginSuccess">Login successful!  <a href = "/loading.php">Click here to proceed!</a></div></body>';	
